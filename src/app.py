@@ -1,9 +1,12 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QStackedWidget
 from PySide6.QtCore import Qt
-from config import Config
+from config.config import Config
 from views.war_room_view import WarRoomView
 from components.custom_t_bar import CustomTitleBar
+from components.circular_cursor import CustomCursor
+from components.trapezoid_aim_box import TrapezoidAimBox
 from core.state import AppState
+from services.database import Database
 
 
 class MainWindow(QMainWindow):
@@ -11,8 +14,13 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.app_state = AppState()
+        self.database = Database()
+
         self._init_ui()
         self._setup_connections()
+        self._load_goal()
+
+        CustomCursor(self, color="black")
 
     def _init_ui(self):
         self.setWindowTitle(Config.APP_NAME)
@@ -38,11 +46,15 @@ class MainWindow(QMainWindow):
         self.setWindowFlags(Qt.FramelessWindowHint)
 
         central_widget = QWidget()
+        self.setAttribute(Qt.WA_TranslucentBackground)
         self.setCentralWidget(central_widget)
 
         layout = QVBoxLayout(central_widget)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
+
+        self.goal_box = TrapezoidAimBox()
+        layout.addWidget(self.goal_box)
 
         self.titlebar = CustomTitleBar(self)
         layout.addWidget(self.titlebar)
@@ -51,7 +63,17 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.war_room)
 
     def _setup_connections(self):
+        self.goal_box.goal_changed.connect(self._on_goal_changed)
+
         self.app_state.tasks_changed.connect(self._on_tasks_changed)
+
+    def _on_goal_changed(self, goal_text: str):
+        self.database.save_user_goal(goal_text)
+
+    def _load_goal(self):
+        goal = self.database.load_user_goal()
+        if goal:
+            self.goal_box.set_goal(goal)
 
     def _on_tasks_changed(self, tasks):
         task_count = len(tasks)

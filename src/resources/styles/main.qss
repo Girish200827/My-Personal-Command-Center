@@ -1,0 +1,11 @@
+* {
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+QMainWindow {
+    background-color: #ecf0f1;
+}
+
+QPushButton {
+    background-color: #3498db;
+}

@@ -22,12 +22,15 @@ class Config:
     USE_CUSTOM_TITLEBAR = True
 
     TITLEBAR_HEIGHT = 40
+    AIM_BOX_HEIGHT = 60
 
     TASK_CATEGORIES = ["Big Rocks", "Pebbles", "Sand"]
 
     COLORS = {"primary": "#3498db", "secondary": "#2ecc71", "danger": "#e74c3c"}
 
-    ENABLE_CUSTOM_CURSOR = True
+    ENABLE_CUSTOM_CURSOR = ["black", "white", "green", "blue", "purple", "red"]
+    CIRCLE_CURSOR_PATH = "src/resources/assets/circle_cursor"
+
     ENABLE_ANIMATION = True
     ENABLE_SOUND_EFFECTS = False
     DEBUG_MODE = False

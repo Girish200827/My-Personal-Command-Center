@@ -11,7 +11,7 @@ class AppState(QObject):
 
     def __init__(self):
         super().__init__()
-        self._task: List[Task] = []
+        self._tasks: List[Task] = []
 
     @property
     def tasks(self) -> List[Task]:
@@ -24,9 +24,9 @@ class AppState(QObject):
         return None
 
     def get_tasks_by_category(self, category: TaskCategory) -> List[Task]:
-        return [task for task in self._tasks if task.completed]
+        return [task for task in self._tasks if task.category == category]
 
-    def get_incompleted_tasks(self) -> List[Task]:
+    def get_incomplete_tasks(self) -> List[Task]:
         return [task for task in self._tasks if not task.completed]
 
     def add_task(self, task: Task):
@@ -52,5 +52,5 @@ class AppState(QObject):
         self.tasks_changed.emit([])
 
     def load_tasks(self, tasks: List[Task]):
-        self._tasks = tasks
-        self.tasks_changed.emit(self.tasks.copy())
+        self._tasks = tasks if tasks is not None else []
+        self.tasks_changed.emit(self._tasks.copy())

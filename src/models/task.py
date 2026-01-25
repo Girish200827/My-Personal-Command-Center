@@ -18,12 +18,12 @@ class TaskPriority(Enum):
 
 @dataclass
 class Task:
-    id: str
     title: str
+    id: str
     category: TaskCategory
 
     description: str = ""
-    priority: TaskPriority.MEDIUM
+    priority: TaskPriority = TaskPriority.MEDIUM
     completed: bool = False
     created_at: datetime = None
     completed_at: Optional[datetime] = None
@@ -48,22 +48,36 @@ class Task:
             "category": self.category.value,
             "description": self.description,
             "priority": self.priority.value,
-            'completed': self.completed,
-            'created_at': self.created_at.isoformat() if self.created_at else None,
-            'completed_at': self.completed_at.isoformat() if self.completed_at else None,
-            'due_date': self.due_date.isoformat() if self.due_date else None,
+            "completed": self.completed,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
+            "due_date": self.due_date.isoformat() if self.due_date else None,
         }
 
     @classmethod
-    def from_dict(cls. data):
+    def from_dict(cls, data):
         return cls(
-            id=data['id'],
-            title=data['title'],
-            category=TaskCategory(date['category']),
-            description=data.get('description', ''),
-            priority=TaskPriority(data.get('priority', 'Medium')),
-            completed=data.get('completed', False),
-            created_at=datetime.fromisoformat(data['created_at']) if data.get('created_at') else None,
-            completed_at=datetime.fromisoformat(data['completed_at']) if data.get('completed_at') else None,
-            due_data=datetime.fromisoformat(data['due_date']) if data.get('due_data') else None,
+            id=data["id"],
+            title=data["title"],
+            category=TaskCategory(data["category"]),
+            description=data.get("description", ""),
+            priority=TaskPriority(data.get("priority", "Medium")),
+            completed=data.get("completed", False),
+            created_at=(
+                datetime.fromisoformat(data["created_at"])
+                if data.get("created_at")
+                else None
+            ),
+            completed_at=(
+                datetime.fromisoformat(data["completed_at"])
+                if data.get("completed_at")
+                else None
+            ),
+            due_date=(
+                datetime.fromisoformat(data["due_date"])
+                if data.get("due_data")
+                else None
+            ),
         )
