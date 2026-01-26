@@ -35,7 +35,7 @@ class TrapezoidAimBox(QWidget):
                 background-color: rgba(255, 255, 255, 0.3);
                 border: 2px solid white;
                 border-radius: 5px;
-                color: white;
+                color: rgb(229, 215, 189);
                 font-size: 18px;
                 font-weight: bold;
                 padding: 5px;
@@ -74,16 +74,16 @@ class TrapezoidAimBox(QWidget):
         self.setMask(region)
 
         gradient = QLinearGradient(0, 5, 0, height - 5)
-        gradient.setColorAt(0, QColor("#3498db"))
-        gradient.setColorAt(1, QColor("#2980b9"))
+        gradient.setColorAt(0, QColor("#000000"))
+        gradient.setColorAt(1, QColor("#000000"))
         painter.fillPath(path, gradient)
 
-        pen = QPen(QColor("#2c3e50"), 2)
+        pen = QPen(QColor("#1a1a1a"), 3)
         painter.setPen(pen)
         painter.drawPath(path)
 
         if not self.is_editing:
-            painter.setPen(QColor("white"))
+            painter.setPen(QColor("#E5D7BD"))
             font = QFont("Segoe UI", 16, QFont.Bold)
             painter.setFont(font)
 

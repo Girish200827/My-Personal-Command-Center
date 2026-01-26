@@ -25,12 +25,12 @@ class SectionContainer(QWidget):
         title.setStyleSheet("font-size: 18px; font-weight: bold")
         header_layout.addWidget(title)
 
-        add_btn = QPushButton("+ Add Task")
+        add_btn = QPushButton("+ NEW MISSION ORDER")
         add_btn.clicked.connect(self._on_add_task_clicked)
         add_btn.setStyleSheet(
             """
             QPushButton {
-                background-color: #2ecc71;
+                background-color: #132F18;
                 color: white;
                 border: none;
                 padding: 8px;
@@ -38,7 +38,7 @@ class SectionContainer(QWidget):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #27ae60;
+                background-color: #0C1F11;
             }
         """
         )

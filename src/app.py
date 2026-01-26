@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QStackedWidget
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QStackedWidget, QFrame
 from PySide6.QtCore import Qt
 from config.config import Config
 from views.war_room_view import WarRoomView
@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
         self._setup_connections()
         self._load_goal()
 
-        CustomCursor(self, color="black")
+        CustomCursor(self, color="blue")
 
     def _init_ui(self):
         self.setWindowTitle(Config.APP_NAME)
@@ -56,11 +56,29 @@ class MainWindow(QMainWindow):
         self.goal_box = TrapezoidAimBox()
         layout.addWidget(self.goal_box)
 
+        background_path = Config.BACKGROUNDS["concrete_bg"]
+
+        content_container = QFrame()
+        content_container.setObjectName("contentContainer")
+        content_container.setStyleSheet(
+            """
+            QFrame#contentContainer {
+                background-color: #1a1a1a;
+            }
+        """
+        )
+
+        content_layout = QVBoxLayout(content_container)
+        content_layout.setContentsMargins(0, 0, 0, 0)
+        content_layout.setSpacing(0)
+
         self.titlebar = CustomTitleBar(self)
-        layout.addWidget(self.titlebar)
+        content_layout.addWidget(self.titlebar)
 
         self.war_room = WarRoomView(self.app_state)
-        layout.addWidget(self.war_room)
+        content_layout.addWidget(self.war_room)
+
+        layout.addWidget(content_container)
 
     def _setup_connections(self):
         self.goal_box.goal_changed.connect(self._on_goal_changed)

@@ -10,6 +10,12 @@ class Config:
     RESOURCES_DIR = BASE_DIR / "resources"
     STYLES_DIR = RESOURCES_DIR / "styles"
     ICONS_DIR = RESOURCES_DIR / "icons"
+    BACKGROUND_DIR = RESOURCES_DIR / "assets/background"
+
+    BACKGROUNDS = {
+        "concrete_bg": BACKGROUND_DIR / "abstract_black_distressed_texture.eps",
+        "blackboard_bg": BACKGROUND_DIR / "blackboard_bg.png",
+    }
 
     DATA_DIR = Path.home() / ".mypccapp"
     DATABASE_PATH = DATA_DIR / "tasks.db"
