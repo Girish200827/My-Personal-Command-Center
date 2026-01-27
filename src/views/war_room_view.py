@@ -28,7 +28,6 @@ class WarRoomView(QWidget):
         self._setup_connection()
         self._load_tasks()
 
-
     def _init_ui(self):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(20, 20, 20, 20)

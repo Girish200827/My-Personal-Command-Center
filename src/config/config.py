@@ -5,7 +5,9 @@ class Config:
     APP_NAME = "My Personal Command Center"
     VERSION = "1.0.0"
 
-    BASE_DIR = Path(__file__).parent  # location of this file
+    BASE_DIR = Path(__file__).parent.parent  # Go up to src/ directory
+
+    PAGES = ["War Room", "Calendar", "Outmail", "Project", "Settings"]
 
     RESOURCES_DIR = BASE_DIR / "resources"
     STYLES_DIR = RESOURCES_DIR / "styles"
@@ -13,7 +15,7 @@ class Config:
     BACKGROUND_DIR = RESOURCES_DIR / "assets/background"
 
     BACKGROUNDS = {
-        "concrete_bg": BACKGROUND_DIR / "abstract_black_distressed_texture.eps",
+        "concrete_bg": BACKGROUND_DIR / "abstract_black_distressed_texture.png",
         "blackboard_bg": BACKGROUND_DIR / "blackboard_bg.png",
     }
 
@@ -24,6 +26,8 @@ class Config:
     DEFAULT_WINDOW_HEIGHT = 600
     MIN_WINDOW_WIDTH = 800
     MIN_WINDOW_HEIGHT = 600
+    MAX_WINDOW_WIDTH = 32767
+    MAX_WINDOW_HEIGHT = 32767
 
     USE_CUSTOM_TITLEBAR = True
 

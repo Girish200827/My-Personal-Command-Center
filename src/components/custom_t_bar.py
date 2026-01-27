@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt, QPoint, QTimer
 from PySide6.QtGui import QMouseEvent
 from datetime import datetime
 from config.config import Config
+from .search_bar_2 import SearchBar
 
 
 class CustomTitleBar(QWidget):
@@ -22,7 +23,7 @@ class CustomTitleBar(QWidget):
         self.setStyleSheet(
             """
         CustomTittleBar {
-            background-color: #2c3e50;
+            background-color: rgba(26, 26, 26, 0.9);
         }
         """
         )
@@ -33,25 +34,30 @@ class CustomTitleBar(QWidget):
 
         # Left side: Date and Time
         self.datetime_label = QLabel()
-        self.datetime_label.setStyleSheet("color: white; font-size: 12px;")
+        self.datetime_label.setStyleSheet(
+            "color: white; font-weight: bold; font-size: 12px;"
+        )
         self.datetime_label.setMinimumWidth(200)
         layout.addWidget(self.datetime_label)
 
         # Center: WAR ROOM title
         layout.addStretch()
-        self.title = QLabel("WAR ROOM")
-        self.title.setStyleSheet("color: white; font-weight: bold; font-size: 14px;")
-        layout.addWidget(self.title)
+
+        self.search_bar = SearchBar(pages=Config.PAGES)
+        self.search_bar.page_selected.connect(lambda page: print(f"Selected: {page}"))
+        self.search_bar.set_pages(["War Room", "New page"])
+
+        layout.addWidget(self.search_bar)
         layout.addStretch()
 
         # Right side: Buttons
-        self._create_button("-", self._on_minimize, layout)
-        self._create_button("□", self._on_maximize, layout)
+        self._create_button("——", self._on_minimize, layout)
+        self._create_button("□□", self._on_maximize, layout)
         self._create_button("x", self._on_close, layout)
 
     def _create_button(self, text: str, callback, layout):
         btn = QPushButton(text)
-        btn.setFixedSize(45, Config.TITLEBAR_HEIGHT)
+        btn.setFixedSize(22, Config.TITLEBAR_HEIGHT)
         btn.setStyleSheet(
             """
             QPushButton {

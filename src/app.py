@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QStackedWidget, QFrame
+from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 from config.config import Config
 from views.war_room_view import WarRoomView
@@ -26,6 +27,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(Config.APP_NAME)
         self.resize(Config.DEFAULT_WINDOW_WIDTH, Config.DEFAULT_WINDOW_HEIGHT)
         self.setMinimumSize(Config.MIN_WINDOW_WIDTH, Config.MIN_WINDOW_HEIGHT)
+        self.setMaximumSize(Config.MAX_WINDOW_WIDTH, Config.MAX_WINDOW_HEIGHT)
 
         if hasattr(Config, "USE_CUSTOM_TITLEBAR") and Config.USE_CUSTOM_TITLEBAR:
             self._setup_custom_window()
@@ -56,16 +58,22 @@ class MainWindow(QMainWindow):
         self.goal_box = TrapezoidAimBox()
         layout.addWidget(self.goal_box)
 
-        background_path = Config.BACKGROUNDS["concrete_bg"]
-
         content_container = QFrame()
         content_container.setObjectName("contentContainer")
+
+        # Load and apply background image using palette for better quality
+        background_path = str(Config.BACKGROUNDS["blackboard_bg"]).replace("\\", "/")
+        bg_image = QPixmap(background_path)
+
         content_container.setStyleSheet(
+            f"""
+            QFrame#contentContainer {{
+                background-image: url({background_path});
+                background-attachment: fixed;
+                background-position: center;
+                background-repeat: no-repeat;
+            }}
             """
-            QFrame#contentContainer {
-                background-color: #1a1a1a;
-            }
-        """
         )
 
         content_layout = QVBoxLayout(content_container)
@@ -73,9 +81,23 @@ class MainWindow(QMainWindow):
         content_layout.setSpacing(0)
 
         self.titlebar = CustomTitleBar(self)
+        self.titlebar.setStyleSheet(
+            """
+            CustomTittleBar {
+                background-color: transparent;
+            }
+            """
+        )
         content_layout.addWidget(self.titlebar)
 
         self.war_room = WarRoomView(self.app_state)
+        self.war_room.setStyleSheet(
+            """
+            WarRoomView {
+                background-color: transparent;
+            }
+            """
+        )
         content_layout.addWidget(self.war_room)
 
         layout.addWidget(content_container)

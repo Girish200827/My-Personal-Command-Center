@@ -111,6 +111,8 @@ class MainView:
             or rect.width() != self.width
             or rect.height() != self.height
         ):
-            self.setGeometry(self.x, self.y, self.width, self.height)  # reset window geometry
+            self.setGeometry(
+                self.x, self.y, self.width, self.height
+            )  # reset window geometry
         else:
             pass
