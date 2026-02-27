@@ -1,0 +1,20 @@
+# ignore any data files
+*.csv
+*.json
+*.tsv
+
+# ignore any SQLite database files
+*.db
+*.sqlite
+
+# ignore the folder testing
+src/testing/*
+
+# ignore any images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.svg
+*.eps

@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, Signal, QEvent
 from PySide6.QtGui import QIcon
+from .circular_cursor import CustomCursor
 
 
 class SearchOverlay(QWidget):
@@ -27,6 +28,8 @@ class SearchOverlay(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
         self.search_btn = search_btn
+
+        CustomCursor(self, color="blue")
 
         # Main container
         container = QFrame(self)

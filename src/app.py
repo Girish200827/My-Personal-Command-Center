@@ -3,6 +3,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 from config.config import Config
 from views.war_room_view import WarRoomView
+from views.blue_view import BlueView
 from components.custom_t_bar import CustomTitleBar
 from components.circular_cursor import CustomCursor
 from components.trapezoid_aim_box import TrapezoidAimBox
@@ -41,7 +42,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(central_widget)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        self.war_room = WarRoomView(self.app_state)
+        self.war_room = BlueView(self.app_state)
         layout.addWidget(self.war_room)
 
     def _setup_custom_window(self):
@@ -90,7 +91,7 @@ class MainWindow(QMainWindow):
         )
         content_layout.addWidget(self.titlebar)
 
-        self.war_room = WarRoomView(self.app_state)
+        self.war_room = BlueView(self.app_state)
         self.war_room.setStyleSheet(
             """
             WarRoomView {

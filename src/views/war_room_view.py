@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 from components.section_container import SectionContainer
+from components.invisible_sections import InvisibleSections
 from models.task import TaskCategory, TaskPriority
 from core.state import AppState
 from core.task_manager import TaskManager
@@ -34,7 +35,7 @@ class WarRoomView(QWidget):
         layout.setSpacing(20)
 
         for category in TaskCategory:
-            section = SectionContainer(category)
+            section = InvisibleSections(category)
             self.sections[category] = section
             layout.addWidget(section)
 
