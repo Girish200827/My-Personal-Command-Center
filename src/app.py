@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QStackedWidget, QFrame
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QPalette, QBrush
 from PySide6.QtCore import Qt
 from config.config import Config
 from views.war_room_view import WarRoomView
@@ -62,43 +62,14 @@ class MainWindow(QMainWindow):
         content_container = QFrame()
         content_container.setObjectName("contentContainer")
 
-        # Load and apply background image using palette for better quality
-        background_path = str(Config.BACKGROUNDS["blackboard_bg"]).replace("\\", "/")
-        bg_image = QPixmap(background_path)
-
-        content_container.setStyleSheet(
-            f"""
-            QFrame#contentContainer {{
-                background-image: url({background_path});
-                background-attachment: fixed;
-                background-position: center;
-                background-repeat: no-repeat;
-            }}
-            """
-        )
-
         content_layout = QVBoxLayout(content_container)
         content_layout.setContentsMargins(0, 0, 0, 0)
         content_layout.setSpacing(0)
 
         self.titlebar = CustomTitleBar(self)
-        self.titlebar.setStyleSheet(
-            """
-            CustomTittleBar {
-                background-color: transparent;
-            }
-            """
-        )
         content_layout.addWidget(self.titlebar)
 
         self.war_room = BlueView(self.app_state)
-        self.war_room.setStyleSheet(
-            """
-            WarRoomView {
-                background-color: transparent;
-            }
-            """
-        )
         content_layout.addWidget(self.war_room)
 
         layout.addWidget(content_container)

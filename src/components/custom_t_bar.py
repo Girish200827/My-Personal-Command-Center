@@ -20,9 +20,11 @@ class CustomTitleBar(QWidget):
 
     def _init_ui(self):
         self.setFixedHeight(Config.TITLEBAR_HEIGHT)
+        self.setObjectName("CustomTitleBar")
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.setStyleSheet(
             """
-        CustomTittleBar {
+        #CustomTitleBar {
             background-color: rgba(26, 26, 26, 0.9);
         }
         """
@@ -44,6 +46,7 @@ class CustomTitleBar(QWidget):
         layout.addStretch()
 
         self.search_bar = SearchBar(pages=Config.PAGES)
+        self.search_bar.move((self.width() - self.search_bar.width()) // 2, 10)
         self.search_bar.page_selected.connect(lambda page: print(f"Selected: {page}"))
         self.search_bar.set_pages(["War Room", "New page"])
 

@@ -17,6 +17,8 @@ class Config:
     BACKGROUNDS = {
         "concrete_bg": BACKGROUND_DIR / "abstract_black_distressed_texture.png",
         "blackboard_bg": BACKGROUND_DIR / "blackboard_bg.png",
+        "empty_jar_bg": BACKGROUND_DIR / "empty_jar_background.png",
+        "ep_jar_bg": BACKGROUND_DIR / "ep-jar-trans-bg.png",
     }
 
     DATA_DIR = Path.home() / ".mypccapp"
