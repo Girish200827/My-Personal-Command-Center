@@ -1,4 +1,11 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QPushButton
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QScrollArea,
+    QPushButton,
+    QInputDialog,
+)
 from PySide6.QtCore import Qt, Signal
 from components.task_card import TaskCard
 from models.task import Task, TaskCategory
@@ -88,6 +95,9 @@ class SectionContainer(QWidget):
     def clear_tasks(self):
         for task_id in list(self.task_cards.keys()):
             self.remove_task_card(task_id)
+
+    def _on_add_task_clicked(self):
+        self.add_task_requested.emit(self.category)
 
     def _on_add_task_clicked(self):
         self.add_task_requested.emit(self.category)

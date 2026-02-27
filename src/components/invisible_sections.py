@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QPushButton,
     QGridLayout,
+    QInputDialog,
 )
 from PySide6.QtGui import QCursor, QPixmap
 from PySide6.QtCore import Qt, Signal
@@ -64,8 +65,8 @@ class InvisibleSections(QWidget):
 
     def _on_add_task_clicked(self, category: TaskCategory):
         title, ok = QInputDialog.getText(
-            self, 'New Mission Order', f'Enter task title for {self.category.value}:'
+            self, "New Mission Order", f"Enter task title for {self.category.value}:"
         )
 
         if ok and title.strip():
-            task = self.task_manager.create_task
+            task = self.task_manager.create_task(self.category, title)

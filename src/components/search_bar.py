@@ -4,13 +4,179 @@ from PySide6.QtWidgets import (
     QFrame,
     QPushButton,
     QLineEdit,
-    QListWidget,
     QVBoxLayout,
+    QGridLayout,
+    QScrollArea,
+    QListWidget,
+    QListWidgetItem,
 )
 from PySide6.QtCore import Qt, Signal, QEvent
-from PySide6.QtGui import QKeyEvent
-from config.config import Config
-from services.database import Database
+from PySide6.QtGui import QIcon
+from .circular_cursor import CustomCursor
+
+
+class SearchOverlay(QWidget):
+    """Overlay widget that appears when search button is clicked"""
+
+    page_selected = Signal(str)
+
+    def __init__(self, parent=None, pages=None, search_btn=None):
+        super().__init__(parent)
+        self.pages = pages if pages else []
+
+        self.setWindowFlags(Qt.WindowType.Popup | Qt.WindowType.FramelessWindowHint)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+
+        self.search_btn = search_btn
+
+        CustomCursor(self, color="blue")
+
+        # Main container
+        container = QFrame(self)
+        container.setStyleSheet(
+            """
+            QFrame {
+                background-color: #222222;
+                border: 1px solid #3C3C3C;
+                border-radius: 6px;
+            }
+        """
+        )
+
+        # Search input
+        self.search_input = QLineEdit()
+        self.search_input.setPlaceholderText("Search pages by name")
+        self.search_input.setFixedHeight(26)
+        self.search_input.setStyleSheet(
+            """
+            QLineEdit {
+                border: 1px solid #474747;
+                border-radius: 5px;
+                background-color: #2A2A2A;
+                color: #FFFFFF;
+                font-size: 13px;
+                padding-left: 12px;
+            }
+            QLineEdit:focus {
+                border: 1px solid #0081CF;
+            }
+        """
+        )
+        self.search_input.textChanged.connect(self.filter_pages)
+        self.search_input.installEventFilter(self)
+
+        # results list
+        self.list_widget = QListWidget()
+        self.list_widget.setStyleSheet(
+            """
+
+            QListWidget {
+                background-color: #222222;
+                color: #CCCCCC;
+                border: none;
+                border-radius: 10px;
+                outline: none;
+                padding-right: 5px;
+                font-size: 11px;   
+                margin: 0px; 
+            }
+                                        
+            QListWidget::item {
+                padding: 0px 10px;
+            }
+            
+            QListWidget::item:selected {
+                background-color: #04395E;
+                color: #FFFFFF;
+            }
+
+            QListWidget::item:selected:hover {
+                background-color: #04395E;
+            }
+            
+            QListWidget::item:hover {
+                background-color: #2A2A2A;
+            }
+        """
+        )
+        self.list_widget.setSpacing(1)
+        self.list_widget.setMaximumHeight(320)
+        self.list_widget.setMinimumHeight(120)
+
+        self.list_widget.itemClicked.connect(
+            lambda item: self.page_selected.emit(item.text())
+        )
+
+        # Scroll area for page buttons
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet(
+            """
+            QScrollArea {
+                border: none;
+                background-color: transparent;
+            }
+            QScrollBar:vertical {
+                background-color: #2A2A2A;
+                width: 10px;
+                border-radius: 5px;
+            }
+            QScrollBar::handle:vertical {
+                background-color: #474747;
+                border-radius: 5px;
+            }
+            QScrollBar::handle:vertical:hover {
+                background-color: #0081CF;
+            }
+        """
+        )
+        scroll.setWidget(self.list_widget)
+
+        # Layout for container
+        container_layout = QVBoxLayout(container)
+        container_layout.addWidget(self.search_input)
+        container_layout.addWidget(scroll)
+        container_layout.setContentsMargins(5, 5, 5, 5)
+        container_layout.setSpacing(4)
+
+        # Main layout
+        main_layout = QVBoxLayout(self)
+        main_layout.addWidget(container)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Populate pages
+        self.populate_pages()
+
+        # Set size
+        self.setFixedSize(400, 500)
+
+    def closeEvent(self, event):
+        if self.search_btn:
+            self.search_btn.show()
+        super().closeEvent(event)
+
+    def populate_pages(self):
+        self.list_widget.clear()
+        for page in self.pages:
+            item = QListWidgetItem(page)
+            self.list_widget.addItem(item)
+
+    def filter_pages(self, text):
+        text = text.lower()
+        for i in range(self.list_widget.count()):
+            item = self.list_widget.item(i)
+            item.setHidden(text not in item.text().lower())
+
+    def on_page_selected(self, page):
+        """Emit signal and close overlay"""
+        self.page_selected.emit(page)
+        self.close()
+
+    def showEvent(self, event):
+        """Focus search input when overlay is shown"""
+        super().showEvent(event)
+        self.search_input.setFocus()
+        self.search_input.clear()
 
 
 class SearchBar(QWidget):
@@ -18,172 +184,73 @@ class SearchBar(QWidget):
 
     def __init__(self, parent=None, pages=None):
         super().__init__(parent)
-
         self.pages = pages if pages else []
+        self.overlay = None
 
-        self.search_input = QLineEdit(self)
-        self.search_input.setPlaceholderText("CURRENT ROOM NAME")
+        # Search button
+        self.search_btn = QPushButton("Command Center")
+        self.search_btn.setFixedHeight(26)
+        self.search_btn.setMinimumWidth(450)
+        self.search_btn.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.search_btn.clicked.connect(self.on_search_btn_click)
 
-        self.search_input.setMinimumWidth(400)
-        self.search_input.setFixedHeight(40)
-
-        self.search_input.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
-
-        self.search_input.textChanged.connect(self.on_text_changed)
-        self.search_input.installEventFilter(self)
-
-        self.search_input.setStyleSheet(
+        self.search_btn.setStyleSheet(
             """
-            QLineEdit {
-                border: 2px solid #474747;
-                border-radius: 30px;
-                background-color: #252525;
-                color: #474747;
-                font-size: 14px;          
-                }
-            QLineEdit:focus {
-                border: 2px solid #0081CF;
-            }
-            QLineEdit:hover {
-                background-color: #5B5B5B;
-                border: 2px solid #2A2A2A;
-            }
-            QLineEdit:focus:hover {
-                border: 2px solid #0081CF;
-                background-color: #2A2A2A;
-            }
-        """
-        )
-
-        self.dropdown = QListWidget(self)
-        self.dropdown.setWindowFlags(
-            Qt.WindowType.Popup | Qt.WindowType.FramelessWindowHint
-        )
-        self.dropdown.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.dropdown.setStyleSheet(
-            """
-            QListWidget {
-                border: 2px solid #0081CF;
-                border-radius: 10px;
-                background-color: #2A2A2A;
-                color: #FFFFFF;
-                font-size: 14px;
-                padding: 5px;
-            }
-            QListWidget::item {
-                padding: 8px;
+            QPushButton {
+                border: 1px solid #757575;
                 border-radius: 5px;
+                background-color: #252525;
+                color: #E0E0E0;
+                font-size: 13px;
+                padding-left: 15px;
+                padding-right: 15px;
             }
-            QListWidget::item:hover {
-                background-color: #5B5B5B;
+            QPushButton:hover {
+                background-color: #2A2A2A;
+                border: 1px solid #757575;
             }
-            QListWidget::item:selected {
+            QPushButton:pressed {
                 background-color: #0081CF;
             }
         """
         )
 
-        self.dropdown.setFixedHeight(400)
-        self.dropdown.setMinimumHeight(150)
-        self.dropdown.setMaximumHeight(250)
-        self.dropdown.itemClicked.connect(self.on_item_selected)
-        self.dropdown.hide()
-
-        self.main_layout = QVBoxLayout()
-        self.main_layout.addWidget(self.search_input)
-        self.main_layout.addWidget(self.dropdown)
+        # Layout
+        self.main_layout = QHBoxLayout()
+        self.main_layout.addWidget(self.search_btn)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.setSpacing(0)
         self.setLayout(self.main_layout)
 
-        self.center_placeholder()
+    def on_search_btn_click(self):
+        """Show the search overlay"""
 
-    def center_placeholder(self):
-        """Center the placeholder text"""
-        # This is a workaround - we'll use alignment
-        self.search_input.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        if self.search_btn.isVisible():
+            self.search_btn.hide()
 
-    def eventFilter(self, obj, event):
-        """Filter events to handle Escape and Enter keys"""
-        if obj == self.search_input:
-            if event.type() == QEvent.Type.FocusIn:
-                self.search_input.setAlignment(Qt.AlignmentFlag.AlignLeft)
-                self.show_dropdown()
-                return False
-            elif event.type() == QEvent.Type.FocusOut:
-                if not self.search_input.text():
-                    self.search_input.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                return False
-            elif event.type() == QEvent.Type.KeyPress:
-                if event.key() == Qt.Key.Key_Escape or event.key() == Qt.Key.Key_Return:
-                    self.search_input.clearFocus()
-                    self.hide_dropdown()
-                    return True
-                elif event.key() == Qt.Key.Key_Down:
-                    if self.dropdown.isVisible() and self.dropdown.count() > 0:
-                        self.dropdown.setFocus()
-                        self.dropdown.setCurrentRow(0)
-                    return True
-        return super().eventFilter(obj, event)
+        if not self.overlay:
+            self.overlay = SearchOverlay(
+                self.window(), self.pages, search_btn=self.search_btn
+            )
+            self.overlay.search_input.setFocus()
+            self.overlay.page_selected.connect(self.page_selected.emit)
 
-    def on_text_changed(self, text):
-        """Handle text changes and filter dropdown"""
-        self.filter_dropdown(text)
+        # Position the overlay
+        button_rect = self.search_btn.rect()
+        global_pos = self.search_btn.mapToGlobal(button_rect.topLeft())
 
-    def show_dropdown(self):
-        """Show the dropdown with all pages"""
-        self.populate_dropdown(self.pages)
-        if self.dropdown.count() > 0:
-            pos = self.search_input.mapToGlobal(self.search_input.rect().bottomLeft())
-            pos.setY(pos.y() + 5)
-            self.dropdown.move(pos)
-            self.dropdown.show()
-            self.dropdown.raise_()
+        overlay_x = (
+            global_pos.x() - (self.overlay.width() - self.search_btn.width()) // 2
+        )
+        overlay_y = (global_pos.y() - self.search_btn.height() // 2) + 12
 
-    def hide_dropdown(self):
-        """Hide the dropdown"""
-        self.dropdown.hide()
+        self.overlay.move(overlay_x, overlay_y)
 
-    def populate_dropdown(self, items):
-        """Populate dropdown with items"""
-        self.dropdown.clear()
-        for item in items:
-            self.dropdown.addItem(item)
-
-        if self.dropdown.count() > 0:
-            item_height = self.dropdown.sizeHintForRow(0)
-            total_height = min(item_height * self.dropdown.count() + 15, 250)
-            self.dropdown.setFixedHeight(total_height)
-
-    def filter_dropdown(self, text):
-        """Filter dropdown items based on search text"""
-        if not text:
-            self.populate_dropdown(self.pages)
-        else:
-            filtered_pages = [
-                page for page in self.pages if text.lower() in page.lower()
-            ]
-            self.populate_dropdown(filtered_pages)
-
-        if self.dropdown.count() > 0 and self.search_input.hasFocus():
-            pos = self.search_input.mapToGlobal(self.search_input.rect().bottomLeft())
-            pos.setY(pos.y() + 5)
-            self.dropdown.move(pos)
-            self.dropdown.show()
-        else:
-            self.dropdown.hide()
-
-    def on_item_selected(self, item):
-        selected_text = item.text()
-        self.search_input.setText(selected_text)
-        self.hide_dropdown()
-        self.search_input.clearFocus()
-        self.page_selected.emit(selected_text)
+        self.overlay.show()
+        self.overlay.raise_()
 
     def set_pages(self, pages):
-        """Update the list of available pages"""
+        """Update the list of pages"""
         self.pages = pages
-
-    def hideEvent(self, event):
-        self.hide_dropdown()
-        super().hideEvent(event)
+        if self.overlay:
+            self.overlay.pages = pages
+            self.overlay.populate_pages()

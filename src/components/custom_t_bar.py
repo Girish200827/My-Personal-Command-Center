@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, QPoint, QTimer
 from PySide6.QtGui import QMouseEvent
 from datetime import datetime
 from config.config import Config
-from .search_bar_2 import SearchBar
+from .search_bar import SearchBar
 
 
 class CustomTitleBar(QWidget):
@@ -73,10 +73,9 @@ class CustomTitleBar(QWidget):
         layout.addWidget(btn)
 
     def _init_timer(self):
-        """Initialize and start the timer to update the clock every second."""
         self.timer.timeout.connect(self._update_datetime)
-        self.timer.start(1000)  # Update every 1000ms (1 second)
-        self._update_datetime()  # Initial update
+        self.timer.start(1000)  # Update every second
+        self._update_datetime()  # initial update
 
     def _update_datetime(self):
         """Update the datetime label with current date, day, and time."""

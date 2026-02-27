@@ -7,8 +7,9 @@
 *.db
 *.sqlite
 
-# ignore the folder testing
+# ignore the folder
 src/testing/*
+resources/assets/*
 
 # ignore any images
 *.png

@@ -35,7 +35,7 @@ class WarRoomView(QWidget):
         layout.setSpacing(20)
 
         for category in TaskCategory:
-            section = InvisibleSections(category)
+            section = SectionContainer(category)
             self.sections[category] = section
             layout.addWidget(section)
 
