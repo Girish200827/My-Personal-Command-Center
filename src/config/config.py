@@ -7,18 +7,27 @@ class Config:
 
     BASE_DIR = Path(__file__).parent.parent  # Go up to src/ directory
 
-    PAGES = ["War Room", "Calendar", "Outmail", "Project", "Settings"]
+    PAGES = ["War Room", "Calendar", "Outmail", "Projects", "Settings"]
 
     RESOURCES_DIR = BASE_DIR / "resources"
     STYLES_DIR = RESOURCES_DIR / "styles"
     ICONS_DIR = RESOURCES_DIR / "icons"
-    BACKGROUND_DIR = RESOURCES_DIR / "assets/background"
 
+    BACKGROUND_DIR = RESOURCES_DIR / "assets/background"
     BACKGROUNDS = {
         "concrete_bg": BACKGROUND_DIR / "abstract_black_distressed_texture.png",
         "blackboard_bg": BACKGROUND_DIR / "blackboard_bg.png",
         "empty_jar_bg": BACKGROUND_DIR / "empty_jar_background.png",
         "ep_jar_bg": BACKGROUND_DIR / "ep-jar-trans-bg.png",
+    }
+
+    TASK_CATEGORIES = ["Big_Rocks", "Pebbles", "Sand"]
+
+    TASKCARDS_DIR = RESOURCES_DIR / "assets/task_cards"
+    TASKCARDS = {
+        "Big Rocks": TASKCARDS_DIR / "rock_image_clear.png",
+        "Pebbles": TASKCARDS_DIR / "pebble_task_card_clear.png",
+        "Sand": TASKCARDS_DIR / "sand_clear.png",
     }
 
     DATA_DIR = Path.home() / ".mypccapp"
@@ -35,8 +44,6 @@ class Config:
 
     TITLEBAR_HEIGHT = 40
     AIM_BOX_HEIGHT = 60
-
-    TASK_CATEGORIES = ["Big Rocks", "Pebbles", "Sand"]
 
     COLORS = {"primary": "#3498db", "secondary": "#2ecc71", "danger": "#e74c3c"}
 

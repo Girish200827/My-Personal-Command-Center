@@ -2,7 +2,6 @@ from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QStackedWidget,
 from PySide6.QtGui import QPixmap, QPalette, QBrush
 from PySide6.QtCore import Qt
 from config.config import Config
-from views.war_room_view import WarRoomView
 from views.blue_view import BlueView
 from components.custom_t_bar import CustomTitleBar
 from components.circular_cursor import CustomCursor
@@ -12,8 +11,8 @@ from services.database import Database
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.app_state = AppState()
         self.database = Database()
@@ -22,7 +21,7 @@ class MainWindow(QMainWindow):
         self._setup_connections()
         self._load_goal()
 
-        CustomCursor(self, color="blue")
+        CustomCursor(self, color="red")
 
     def _init_ui(self):
         self.setWindowTitle(Config.APP_NAME)
@@ -42,7 +41,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(central_widget)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        self.war_room = BlueView(self.app_state)
+        self.war_room = BlueView(self.app_state, parent=self)
         layout.addWidget(self.war_room)
 
     def _setup_custom_window(self):

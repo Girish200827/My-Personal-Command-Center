@@ -6,8 +6,6 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
 )
 from PySide6.QtCore import Qt
-from components.section_container import SectionContainer
-from components.invisible_sections import InvisibleSections
 from models.task import TaskCategory, TaskPriority
 from core.state import AppState
 from core.task_manager import TaskManager

@@ -19,6 +19,7 @@ def main():
     Config.ensure_directories()
 
     window = MainWindow()
+    window.move(100, 75)
     window.show()
 
     sys.exit(app.exec())
